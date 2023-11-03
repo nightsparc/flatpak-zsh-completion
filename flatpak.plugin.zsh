@@ -14,9 +14,9 @@ _zsh_flatpak_get_available_apps(){
 }
 
 _zsh_flatpak_command_output(){
-  list=$(flatpak $@)
+  fp_list=$(flatpak $@)
   output=()
-  for app in $list
+  for app in $fp_list
   do
     app=($(echo "${app}" | sort -u ))
     IFS=" "
@@ -67,6 +67,15 @@ _zsh_flatpak_get_remotes() {
   _values ${remotes[@]}
 }
 
+_zsh_flatpak_kill_completion() {
+  _kill_arguments=(
+    "--help:Show help options and exit" \
+    "--verbose:Print debug information during command processing" \
+    "--ostree-verbose:Print OSTree debug information during command processing"
+  )
+  _arguments $_kill_arguments
+}
+
 
 _zsh_flatpak_install_completion() {
   _install_arguments=(
@@ -101,6 +110,8 @@ _flatpak() {
     "list:List installed apps and/or runtimes" \
     "info:Show info for installed app or runtime" \
     "run:Run an application" \
+    "ps:Enumerate running instances" \
+    "kill:Stop a running Flatpak instance" \
     "override:Override permissions for an application" \
     "make-current:Specify default version to run" \
     "enter:Enter the namespace of a running application" \
@@ -149,6 +160,9 @@ _flatpak() {
     ;;
     remote-delete|remote-modify|remote-ls)
       _zsh_flatpak_get_remotes
+    ;;
+    kill)
+      _zsh_flatpak_kill_completion
     ;;
   esac
 }
